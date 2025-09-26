@@ -367,7 +367,7 @@ const CurrentStock = () => {
                 </div> : viewMode === 'grid' ? <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {filteredCars.map((car, index) => <div key={index} className="flex flex-col bg-white group shadow-md">
                       <div className="mb-4 relative overflow-hidden">
-                        <img src={car.image} alt={car.title} className="w-full h-[280px] object-cover transition-transform duration-500 group-hover:scale-105" />
+                        <img src={car.images && car.images.length > 0 ? car.images[0] : car.image} alt={car.title} className="w-full h-[280px] object-cover transition-transform duration-500 group-hover:scale-105" />
                         <div className="absolute top-0 right-0 bg-accent-red text-white text-xs px-3 py-1">
                           {car.bodyStyle}
                         </div>
@@ -412,7 +412,7 @@ const CurrentStock = () => {
                 </div> : <div className="flex flex-col space-y-8">
                   {filteredCars.map((car, index) => <div key={index} className="flex flex-col md:flex-row bg-white group overflow-hidden shadow-md">
                       <div className="relative w-full md:w-1/3 overflow-hidden">
-                        <img src={car.image} alt={car.title} className="w-full h-[280px] md:h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                        <img src={car.images && car.images.length > 0 ? car.images[0] : car.image} alt={car.title} className="w-full h-[280px] md:h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                         <div className="absolute top-0 right-0 bg-accent-red text-white text-xs px-3 py-1">
                           {car.bodyStyle}
                         </div>

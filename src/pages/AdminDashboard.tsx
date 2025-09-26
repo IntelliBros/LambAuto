@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PlusIcon, TrashIcon, EditIcon, LogOutIcon, CarIcon, XIcon } from 'lucide-react';
+import ImageUpload from '../components/ImageUpload';
 
 interface Car {
   id: string;
@@ -13,7 +14,8 @@ interface Car {
   numericPrice: number;
   brand: string;
   bodyStyle: string;
-  image: string;
+  image: string;  // For backward compatibility
+  images?: string[];  // New: array of images
   priceSub?: string;
 }
 
@@ -22,6 +24,7 @@ const AdminDashboard = () => {
   const [cars, setCars] = useState<Car[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingCar, setEditingCar] = useState<Car | null>(null);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [formData, setFormData] = useState<Omit<Car, 'id'>>({
     title: '',
     year: new Date().getFullYear().toString(),
@@ -33,6 +36,7 @@ const AdminDashboard = () => {
     brand: '',
     bodyStyle: '',
     image: '',
+    images: [],
     priceSub: ''
   });
 
@@ -134,7 +138,9 @@ const AdminDashboard = () => {
     const newCar: Car = {
       ...formData,
       id: editingCar ? editingCar.id : Date.now().toString(),
-      numericPrice: formData.price === 'POA' ? 0 : parseInt(formData.price.replace(/[^0-9]/g, '')) || 0
+      numericPrice: formData.price === 'POA' ? 0 : parseInt(formData.price.replace(/[^0-9]/g, '')) || 0,
+      images: uploadedImages.length > 0 ? uploadedImages : formData.images || [],
+      image: uploadedImages.length > 0 ? uploadedImages[0] : formData.image  // Set first image as primary for backward compatibility
     };
 
     let updatedCars: Car[];
@@ -150,6 +156,7 @@ const AdminDashboard = () => {
     // Reset form
     setShowForm(false);
     setEditingCar(null);
+    setUploadedImages([]);
     setFormData({
       title: '',
       year: new Date().getFullYear().toString(),
@@ -161,12 +168,16 @@ const AdminDashboard = () => {
       brand: '',
       bodyStyle: '',
       image: '',
+      images: [],
       priceSub: ''
     });
   };
 
   const handleEdit = (car: Car) => {
     setEditingCar(car);
+    // If car has multiple images, use them; otherwise convert single image to array
+    const carImages = car.images && car.images.length > 0 ? car.images : (car.image ? [car.image] : []);
+    setUploadedImages(carImages);
     setFormData({
       title: car.title,
       year: car.year,
@@ -178,6 +189,7 @@ const AdminDashboard = () => {
       brand: car.brand,
       bodyStyle: car.bodyStyle,
       image: car.image,
+      images: car.images || [],
       priceSub: car.priceSub || ''
     });
     setShowForm(true);
@@ -221,6 +233,7 @@ const AdminDashboard = () => {
             onClick={() => {
               setShowForm(true);
               setEditingCar(null);
+              setUploadedImages([]);
               setFormData({
                 title: '',
                 year: new Date().getFullYear().toString(),
@@ -232,6 +245,7 @@ const AdminDashboard = () => {
                 brand: '',
                 bodyStyle: '',
                 image: '',
+                images: [],
                 priceSub: ''
               });
             }}
@@ -395,17 +409,14 @@ const AdminDashboard = () => {
                       </select>
                     </div>
 
-                    <div>
+                    <div className="md:col-span-2">
                       <label className="block text-sm font-medium text-gray-300 mb-1">
-                        Image URL
+                        Images (Drag & Drop or Click to Upload)
                       </label>
-                      <input
-                        type="url"
-                        name="image"
-                        value={formData.image}
-                        onChange={handleInputChange}
-                        className="w-full px-3 py-2 bg-dark-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-accent-red"
-                        required
+                      <ImageUpload
+                        images={uploadedImages}
+                        onImagesChange={setUploadedImages}
+                        maxImages={10}
                       />
                     </div>
                   </div>
