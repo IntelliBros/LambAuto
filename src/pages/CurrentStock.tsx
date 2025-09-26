@@ -19,8 +19,17 @@ const CurrentStock = () => {
   const [selectedBodyStyles, setSelectedBodyStyles] = useState([]);
   const [showFilters, setShowFilters] = useState(false); // For mobile
   const [isFilterCollapsed, setIsFilterCollapsed] = useState(true); // For desktop - start collapsed
-  // Car data with additional properties for filtering
-  const carsData = [{
+  const [carsData, setCarsData] = useState([]);
+
+  // Load cars from localStorage on component mount
+  useEffect(() => {
+    const storedCars = localStorage.getItem('inventoryCars');
+    if (storedCars) {
+      setCarsData(JSON.parse(storedCars));
+    } else {
+      // Set default cars if no data in localStorage
+      const defaultCars = [{
+    id: '1',
     title: 'ASTON MARTIN VALKYRIE',
     year: '2023',
     yearCount: '(23)',
@@ -32,6 +41,7 @@ const CurrentStock = () => {
     bodyStyle: 'Hypercar',
     image: "https://images.unsplash.com/photo-1676548784916-c899cf0e3065?q=80&w=2940&auto=format&fit=crop"
   }, {
+    id: '2',
     title: 'LAMBORGHINI AVENTADOR SVJ',
     year: '2023',
     yearCount: '(75)',
@@ -43,6 +53,7 @@ const CurrentStock = () => {
     bodyStyle: 'Supercar',
     image: 'https://images.unsplash.com/photo-1614200179396-2bdb77ebf81b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2532&q=80'
   }, {
+    id: '3',
     title: 'FERRARI SF90 STRADALE',
     year: '2023',
     yearCount: '(74)',
@@ -54,6 +65,7 @@ const CurrentStock = () => {
     bodyStyle: 'Supercar',
     image: 'https://images.unsplash.com/photo-1592198084033-aade902d1aae?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2670&q=80'
   }, {
+    id: '4',
     title: 'LAMBORGHINI URUS',
     year: '2023',
     yearCount: '(25)',
@@ -66,6 +78,10 @@ const CurrentStock = () => {
     priceSub: 'inc. VAT',
     image: 'https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?q=80&w=2940&auto=format&fit=crop'
   }];
+      setCarsData(defaultCars);
+      localStorage.setItem('inventoryCars', JSON.stringify(defaultCars));
+    }
+  }, []);
   // Get unique brands and body styles for filter options
   const brands = [...new Set(carsData.map(car => car.brand))].sort();
   const bodyStyles = [...new Set(carsData.map(car => car.bodyStyle))].sort();
